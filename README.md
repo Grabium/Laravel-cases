@@ -19,6 +19,20 @@ app(); /* Ou */ $this->app;
 app()->bind(Interface $interface, Concrete|callable $concrete);//salva em bindingns e cria uma nova instância a cada chamada.
 app()->singleton(Interface $interface, Concrete|callable $concrete);//salva em bindings e instances para chamadas futuras.
 app()->instance(Interface $interface, Concrete $concrete);//salva em bindings e instances para chamadas futuras.
+```
 
+É possível criar um provider com o comando:
 
+`php artisan make:provider NomeDoProvider`
+
+Dessa maneira além da classe semelhante ao AppServiceProvider, ocorre uma inscrição dessa no documento `./bootstrap/providers.php`
+
+```php
+//    bootstrap/providers.php
+<?php
+
+return [
+    App\Providers\NomeDoProvider::class,
+    App\Providers\AppServiceProvider::class,
+];
 ```
