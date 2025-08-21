@@ -32,6 +32,10 @@ Fora de Container é possível acessar por uma Facade:
 use Illuminate\Support\Facades\App;
 
 App
+
+//use assim:
+
+App::make(Sub\Dir\Class::class);
 ```
 
 
