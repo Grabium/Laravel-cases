@@ -138,9 +138,9 @@ interface EventPusher
     // ...
 }
 ```
-## Atributos Contextuais
+## Atributos Contextuais - Fixos para os drivers
 
-Ao invés de fazer uma notação na interface, pode-se fazer uma na promoção de propriedade no construtor da classe cliente:
+Como a vinculação contextual é frequentemente usada para injetar implementações de drivers ou valores de configuração, o Laravel oferece uma variedade de atributos de ligação contextuais que permitem injetar esses tipos de valores sem definir manualmente as ligações contextuais em seus provedores de serviços. Ao invés de fazer uma notação na interface, pode-se fazer uma na promoção de propriedade no construtor da classe cliente:
 
 ```php
 <?php
@@ -212,4 +212,41 @@ use Illuminate\Container\Attributes\CurrentUser;
 Route::get('/user', function (#[CurrentUser] User $user) {
     return $user;
 })->middleware('auth');
+```
+
+## Atributos Personalizados
+
+Você pode criar seus próprios atributos contextuais implementando oIlluminate\Contracts\Container\ContextualAttributeContrato. O contêiner chamará o seu atributo deresolvemétodo, que deve resolver o valor que deve ser injetado na classe utilizando o atributo. No exemplo abaixo, vamos re-implementar o built-in da LaravelConfigatributo:
+
+```php
+<?php
+
+namespace App\Attributes;
+
+use Attribute;
+use Illuminate\Contracts\Container\Container;
+use Illuminate\Contracts\Container\ContextualAttribute;
+
+#[Attribute(Attribute::TARGET_PARAMETER)]
+class Config implements ContextualAttribute
+{
+    /**
+     * Create a new attribute instance.
+     */
+    public function __construct(public string $key, public mixed $default = null)
+    {
+    }
+
+    /**
+     * Resolve the configuration value.
+     *
+     * @param  self  $attribute
+     * @param  \Illuminate\Contracts\Container\Container  $container
+     * @return mixed
+     */
+    public static function resolve(self $attribute, Container $container)
+    {
+        return $container->make('config')->get($attribute->key, $attribute->default);
+    }
+}
 ```
